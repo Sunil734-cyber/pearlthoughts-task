@@ -8,10 +8,21 @@ function createSyncRouter(db) {
   const router = Router();
   const taskService = new TaskService(db);
   const syncService = new SyncService(db, taskService);
+  // Optimize: Add debouncing to prevent excessive sync requests
+  let lastSyncTime = 0;
+  const SYNC_DEBOUNCE_MS = 2000; // 2 seconds
+  let syncInProgress = false;
 
   // Trigger manual sync
   router.post('/sync', asyncHandler(async (req, res) => {
+    const now = Date.now();
+    if (syncInProgress || (now - lastSyncTime) < SYNC_DEBOUNCE_MS) {
+      return res.json({ message: 'Sync already in progress or too frequent', debounced: true });
+    }
+    syncInProgress = true;
+    lastSyncTime = now;
     const result = await syncService.sync();
+    syncInProgress = false;
     res.json(result);
   }));
 

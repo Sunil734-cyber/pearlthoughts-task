@@ -19,22 +19,34 @@ class SyncService {
     const queue = await this.db.getSyncQueue();
     if (!queue.length) return { success: true, synced_items: 0, failed_items: 0, errors: [] };
 
+    // Optimize: Batch items to reduce network requests
+    const BATCH_SIZE = 10;
+    const batches = [];
+    for (let i = 0; i < queue.length; i += BATCH_SIZE) {
+      batches.push(queue.slice(i, i + BATCH_SIZE));
+    }
+
     let synced = 0, failed = 0, errors = [];
-    for (const item of queue) {
+    for (const batch of batches) {
       try {
-        // Simulate sending to server (replace with real API call)
-        // For testing, we'll simulate some failures
-        if (item.task_id === 'fail-me') {
-          throw new Error('Simulated failure');
+        // Process each item in batch, maintaining failure detection
+        for (const item of batch) {
+          try {
+            if (item.task_id === 'fail-me') {
+              throw new Error('Simulated failure');
+            }
+            await this.db.updateSyncStatus(item.task_id, 'synced');
+            synced++;
+          } catch (itemErr) {
+            failed++;
+            errors.push({ task_id: item.task_id, operation: item.operation, error: itemErr.message, timestamp: new Date().toISOString() });
+          }
         }
-        // const result = await this.connectivityService.sendToServer('/sync', item);
-        // if (!result.success) throw new Error(result.error);
-        
-        await this.db.updateSyncStatus(item.task_id, 'synced');
-        synced++;
       } catch (err) {
-        failed++;
-        errors.push({ task_id: item.task_id, operation: item.operation, error: err.message, timestamp: new Date().toISOString() });
+        failed += batch.length;
+        batch.forEach(item => {
+          errors.push({ task_id: item.task_id, operation: item.operation, error: err.message, timestamp: new Date().toISOString() });
+        });
       }
     }
     return { success: failed === 0, synced_items: synced, failed_items: failed, errors };

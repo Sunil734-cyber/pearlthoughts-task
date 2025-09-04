@@ -5,6 +5,10 @@ class TaskService {
   constructor(db) {
     this.db = db;
     this.syncManager = new TaskSyncManager(db);
+    // Optimize: Add in-memory cache to reduce database queries
+    this.taskCache = new Map();
+    this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
+    this.lastCacheUpdate = 0;
   }
 
   async createTask(taskData) {
@@ -53,7 +57,15 @@ class TaskService {
   }
 
   async getAllTasks() {
-    return await this.db.getAllTasks();
+    // Optimize: Use cache to reduce database queries
+    const now = Date.now();
+    if (this.taskCache.has('all') && (now - this.lastCacheUpdate) < this.cacheExpiry) {
+      return this.taskCache.get('all');
+    }
+    const tasks = await this.db.getAllTasks();
+    this.taskCache.set('all', tasks);
+    this.lastCacheUpdate = now;
+    return tasks;
   }
 
   async getTasksNeedingSync() {

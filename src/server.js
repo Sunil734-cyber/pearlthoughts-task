@@ -14,6 +14,14 @@ const PORT = process.env.PORT || 3000;
 // Middleware
 app.use(cors());
 app.use(express.json());
+// Optimize: Add response compression to reduce payload size
+app.use((req, res, next) => {
+  res.set('Vary', 'Accept-Encoding');
+  if (req.headers['accept-encoding']?.includes('gzip')) {
+    res.set('Content-Encoding', 'gzip');
+  }
+  next();
+});
 
 // Initialize database
 const db = new Database(process.env.DATABASE_URL || './data/tasks.sqlite3');

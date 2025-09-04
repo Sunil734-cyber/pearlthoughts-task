@@ -5,6 +5,11 @@ const sqlite = sqlite3.verbose();
 export class DatabaseConnection {
   constructor(filename = ':memory:') {
     this.db = new sqlite.Database(filename);
+    // Optimize: Configure SQLite for better performance
+    this.db.run('PRAGMA journal_mode = WAL');
+    this.db.run('PRAGMA synchronous = NORMAL');
+    this.db.run('PRAGMA cache_size = 1000');
+    this.db.run('PRAGMA temp_store = MEMORY');
   }
 
   run(sql, params = []) {

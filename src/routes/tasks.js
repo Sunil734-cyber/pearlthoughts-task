@@ -12,6 +12,12 @@ function createTaskRouter(db) {
   // Get all tasks
   router.get('/', asyncHandler(async (req, res) => {
     const tasks = await taskService.getAllTasks();
+    // Optimize: Add caching headers to reduce repeat requests
+    res.set({
+      'Cache-Control': 'public, max-age=60',
+      'ETag': `"${JSON.stringify(tasks).length}"`,
+      'Last-Modified': new Date().toUTCString()
+    });
     res.json(tasks);
   }));
 
