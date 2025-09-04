@@ -12,6 +12,7 @@ class TaskService {
   }
 
   async createTask(taskData) {
+    console.log('Creating new task:', taskData.title);
     const now = new Date().toISOString();
     const task = {
       id: uuidv4(),
@@ -27,10 +28,12 @@ class TaskService {
     };
     await this.db.createTask(task);
     await this.syncManager.addCreateToSyncQueue(task);
+    console.log('Task created successfully:', task.id);
     return task;
   }
 
   async updateTask(id, updates) {
+    console.log('Updating task:', id, updates);
     const existingTask = await this.getTask(id);
     if (!existingTask) return null;
     

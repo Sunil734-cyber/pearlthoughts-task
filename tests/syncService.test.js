@@ -3,10 +3,12 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { Database } from '../src/db/database.js';
 import { TaskService } from '../src/services/taskService.js';
 import { SyncService } from '../src/services/syncService.js';
+import { ConnectivityService } from '../src/services/connectivityService.js';
 import axios from 'axios';
 
-// Mock axios
+// Mock axios and ConnectivityService
 vi.mock('axios');
+vi.mock('../src/services/connectivityService.js');
 
 describe('SyncService', () => {
   let db;
@@ -27,16 +29,24 @@ describe('SyncService', () => {
 
   describe('checkConnectivity', () => {
     it('should return true when server is reachable', async () => {
-      vi.mocked(axios.get).mockResolvedValueOnce({ data: { status: 'ok' } });
+      // Mock the ConnectivityService's checkConnectivity method
+      vi.mocked(ConnectivityService).mockImplementation(() => ({
+        checkConnectivity: vi.fn().mockResolvedValueOnce(true)
+      }));
       
-      const isOnline = await syncService.checkConnectivity();
+      const testSyncService = new SyncService(db, taskService);
+      const isOnline = await testSyncService.checkConnectivity();
       expect(isOnline).toBe(true);
     });
 
     it('should return false when server is unreachable', async () => {
-      vi.mocked(axios.get).mockRejectedValueOnce(new Error('Network error'));
+      // Mock the ConnectivityService's checkConnectivity method  
+      vi.mocked(ConnectivityService).mockImplementation(() => ({
+        checkConnectivity: vi.fn().mockResolvedValueOnce(false)
+      }));
       
-      const isOnline = await syncService.checkConnectivity();
+      const testSyncService = new SyncService(db, taskService);
+      const isOnline = await testSyncService.checkConnectivity();
       expect(isOnline).toBe(false);
     });
   });

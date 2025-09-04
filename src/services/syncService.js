@@ -15,8 +15,10 @@ class SyncService {
   }
 
   async sync() {
+    console.log('Starting sync process...');
     // Get all items from sync queue
     const queue = await this.db.getSyncQueue();
+    console.log(`Found ${queue.length} items in sync queue`);
     if (!queue.length) return { success: true, synced_items: 0, failed_items: 0, errors: [] };
 
     // Optimize: Batch items to reduce network requests
@@ -49,6 +51,7 @@ class SyncService {
         });
       }
     }
+    console.log(`Sync completed: ${synced} synced, ${failed} failed`);
     return { success: failed === 0, synced_items: synced, failed_items: failed, errors };
   }
 

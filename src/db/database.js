@@ -11,7 +11,9 @@ export class Database {
   }
 
   async initialize() {
+    console.log('Initializing database...');
     await DatabaseSchema.createTables(this.connection);
+    console.log('Database tables created successfully');
   }
 
   // Delegate methods to repositories for backward compatibility
