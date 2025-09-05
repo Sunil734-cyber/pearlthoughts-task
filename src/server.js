@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import compression from 'compression';
 import dotenv from 'dotenv';
 import { Database } from './db/database.js';
 import { createTaskRouter } from './routes/tasks.js';
@@ -19,14 +20,8 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
-// Optimize: Add response compression to reduce payload size
-app.use((req, res, next) => {
-  res.set('Vary', 'Accept-Encoding');
-  if (req.headers['accept-encoding']?.includes('gzip')) {
-    res.set('Content-Encoding', 'gzip');
-  }
-  next();
-});
+// Optimize: Add proper response compression
+app.use(compression());
 
 // Initialize database
 const db = new Database(process.env.DATABASE_URL || './data/tasks.sqlite3');
