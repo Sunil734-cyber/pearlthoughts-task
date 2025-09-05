@@ -20,8 +20,8 @@ app.use((req, res, next) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
   next();
 });
-// Optimize: Add proper response compression
-app.use(compression());
+// Disable compression temporarily for demo compatibility
+// TODO: Re-enable compression after fixing header issues
 
 // Initialize database
 const db = new Database(process.env.DATABASE_URL || './data/tasks.sqlite3');
