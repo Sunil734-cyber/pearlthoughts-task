@@ -4,11 +4,7 @@ export class SyncRepository {
   }
 
   async addToSyncQueue(item) {
-<<<<<<< HEAD
     const sql = `INSERT INTO sync_queue (id, task_id, operation, data, created_at, retry_count, error_message) VALUES ($1, $2, $3, $4, $5, $6, $7)`;
-=======
-    const sql = `INSERT INTO sync_queue (id, task_id, operation, data, created_at, retry_count, error_message) VALUES (?, ?, ?, ?, ?, ?, ?)`;
->>>>>>> 48dd4c7c25db550133cb05d41668f42e72f7de6a
     await this.connection.run(sql, [
       item.id,
       item.task_id,
@@ -26,20 +22,12 @@ export class SyncRepository {
   }
 
   async updateRetryCount(id, count) {
-<<<<<<< HEAD
     const sql = `UPDATE sync_queue SET retry_count = $1 WHERE id = $2`;
-=======
-    const sql = `UPDATE sync_queue SET retry_count = ? WHERE id = ?`;
->>>>>>> 48dd4c7c25db550133cb05d41668f42e72f7de6a
     await this.connection.run(sql, [count, id]);
   }
 
   async removeSyncItem(id) {
-<<<<<<< HEAD
     const sql = `DELETE FROM sync_queue WHERE id = $1`;
-=======
-    const sql = `DELETE FROM sync_queue WHERE id = ?`;
->>>>>>> 48dd4c7c25db550133cb05d41668f42e72f7de6a
     await this.connection.run(sql, [id]);
   }
 }
