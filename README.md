@@ -1,4 +1,4 @@
-Note : while testing in services like postman please keep the access-control as identity as render doesnt persist headers accross requests
+Note : while testing in services like postman please keep the access-control as identity as render doesnt persist headers across requests
 
 
 # Backend Interview Challenge - Task Sync API
