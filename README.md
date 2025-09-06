@@ -1,6 +1,6 @@
 <<<<<<< HEAD
 =======
-Note : while testing in services like postman please keep the access-control as identity as render doesnt persist headers across requests
+Note : while testing in services like postman please keep the access-control as identity
 
 
 >>>>>>> 48dd4c7c25db550133cb05d41668f42e72f7de6a
