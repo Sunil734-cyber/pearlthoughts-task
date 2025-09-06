@@ -1,3 +1,6 @@
+Note : while testing in services like postman please keep the access-control as identity as render doesnt persist headers accross requests
+
+
 # Backend Interview Challenge - Task Sync API
 
 This is a backend developer interview challenge focused on building a sync-enabled task management API. The challenge evaluates understanding of REST APIs, data synchronization, offline-first architecture, and conflict resolution.
